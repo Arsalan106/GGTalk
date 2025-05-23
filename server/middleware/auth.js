@@ -1,4 +1,4 @@
-import User from "../models/User";
+import User from "../models/User.js";
 import jwt from "jsonwebtoken"
 export const protectRoute=async(req,res,next)=>{
     try{
@@ -15,7 +15,6 @@ export const protectRoute=async(req,res,next)=>{
         return res.json({success:false,message:error.message});
     }
 }
-
 export const checkAuth=async(req,res)=>{
     res.json({success:true,user:req.user});
 }
