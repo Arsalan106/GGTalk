@@ -5,6 +5,6 @@ const messageRouter=express.Router();
 
 messageRouter.get("/users",protectRoute,chatList);
 messageRouter.get("/:id",protectRoute,getMessages);
-messageRouter.put("mark/:id",protectRoute,markSeen);
+messageRouter.put("/mark/:id",protectRoute,markSeen);
 messageRouter.post("/send/:id",protectRoute,sendMessage);
 export default messageRouter;

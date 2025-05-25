@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import assets, { userDummyData } from '../assets/assets'
+import { useContext } from 'react';
+import { Authcontext } from '../../context/storeContext';
 const LoginPage = () => {
   const [currState, setcurrState] = useState("Sign up");
   const [fullName, setFullName] = useState("");
@@ -7,12 +9,14 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [bio, setBio] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const {login}=useContext(Authcontext)
   const onsubmithandler=(event)=>{
     event.preventDefault();
     if(currState=="Sign up" && !isSubmitted){
       setIsSubmitted(true);
       return;
     }
+    login(currState=="Sign up"?'signup':'login',{fullName,email,password,bio});
   }
   return (
     <div className='min-h-screen bg-cover bg-center flex items-center justify-center gap-8 sm:justify-evenly  backdrop-blur-2xl'>

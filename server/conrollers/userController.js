@@ -17,9 +17,9 @@ export const signup = async (req, res) => {
             return res.json({ success: false, message: "User already exist" });
         }
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(salt, password);
+        const hashedPassword = await bcrypt.hash(password, salt);
         const newUser = await User.create({
-            fullName, email, password:hashedPassword    , bio
+            fullName, email, password:hashedPassword ,bio
         });
         const token = generateToken(newUser._id);
         res.json({ success: true, userData: newUser, token: token, message: "Account created succesfully" });
@@ -52,7 +52,7 @@ export const login = async (req, res) => {
         const token = generateToken(user._id);
         res.json({
             success: true,
-            data: user,
+            userData: user,
             token: token,
             message: "Login successfully"
         })
