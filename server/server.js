@@ -14,6 +14,7 @@ import {Server} from 'socket.io'
 const app=express();
 const server=http.createServer(app);
 
+//created a circuit of sockets 
 
 export const io=new Server(server,{
     cors:{origin:"*"}
@@ -21,6 +22,8 @@ export const io=new Server(server,{
 
 export const userSocketMap={};
 
+
+//listener on the server side
 io.on("connection",(socket)=>{
   const userId=socket.handshake.query.userId;
   console.log("User Connected",userId);

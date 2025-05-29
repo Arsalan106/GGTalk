@@ -9,7 +9,7 @@ console.log("Using backend URL:", backendurl);
 
 // Set axios base URL globally
 axios.defaults.baseURL = backendurl;
-export const Authcontext = createContext();
+ export const Authcontext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }) => {
 
     newSocket.on("getOnlineUsers", (userIds) => {
       setOnlineUser(userIds);
-    });
+    }); 
   };
 
   useEffect(() => {

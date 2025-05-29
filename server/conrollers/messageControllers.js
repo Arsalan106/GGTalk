@@ -2,6 +2,7 @@ import cloudinary from "../lib/cloudinary.js";
 import Message from "../models/message.js";
 import User from "../models/User.js";
 import {io,userSocketMap} from "../server.js";
+import mongoose from "mongoose";
 //controller for chaList
 export const chatList=async(req,res)=>{
     try{
@@ -63,30 +64,44 @@ export const markSeen=async(req,res)=>{
 //controller to send message
 
 
-export const sendMessage=async(req,res)=>{
-    try{
-        const {text,image}=req.body;
-        //id who is logged in
-        const senderId=req.user._id;
-        const recieverId=req.params.id;
-        let imageUrl;
-        if(image){
-            const response=await cloudinary.uploader.upload(image);
-            imageUrl=response.secure_url;
-        }
-        const newMessage=await Message.create({
-            senderId,
-            recieverId,
-            text,
-            image:imageUrl
-        })
-        const recieverSocketId=userSocketMap[recieverId];
-        if(recieverSocketId){
-            io.to(recieverSocketId).emit("newMessage",newMessage);
-        }
-        res.json({success:true,newMessage});
-    }catch(error){
-        console.log("error in send messages controller",error.messages);
-        res.json({success:false,message:error.message});
+export const sendMessage = async (req, res) => {
+  try {
+    const { text, image } = req.body;
+    const senderId = req.user._id;
+    const receiverId = req.params.id;
+
+    // Validate receiverId presence
+    if (!receiverId) {
+      return res.status(400).json({ success: false, message: "Receiver ID is required" });
     }
-}
+
+    // Validate receiverId format
+    if (!mongoose.Types.ObjectId.isValid(receiverId)) {
+      return res.status(400).json({ success: false, message: "Invalid receiver ID" });
+    }
+
+    let imageUrl;
+    if (image) {
+      const response = await cloudinary.uploader.upload(image);
+      imageUrl = response.secure_url;
+    }
+
+    const newMessage = await Message.create({
+      senderId,
+      receiverId, // Corrected spelling
+      text,
+      image: imageUrl
+    });
+
+    // Emit to receiver socket if online
+    const receiverSocketId = userSocketMap[receiverId];
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
+
+    res.status(201).json({ success: true, newMessage });
+  } catch (error) {
+    console.error("Error in sendMessage controller:", error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
